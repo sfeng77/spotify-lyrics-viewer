@@ -120,6 +120,11 @@ const LyricsDisplay: React.FunctionComponent<IProps> = ({ lyricsDetails, progres
               <span className={classes.highlightedLyrics} ref={highlightedRef} id="lyrics-current">
                 {lyricsState.highlighted}
               </span>
+              {lyricsState.next !== "" && (
+                <span className={classes.nextLyrics} id="lyrics-next">
+                  {lyricsState.next}
+                </span>
+              )}
             </div>
           )}
 
@@ -150,6 +155,7 @@ const calculateLyricsState = (
     return {
       before: "",
       highlighted: "",
+      next: "",
       after: lyricsDetails.plainLyrics ?? ""
     };
   }
@@ -163,11 +169,14 @@ const calculateLyricsState = (
       ? passedLyricsAndCurrent[passedLyricsAndCurrent.length - 1]
       : null;
   const upcomingLyrics = lyricsDetails.syncedLyrics.filter(x => x.timestamp > progressSeconds);
+  const nextLyrics = upcomingLyrics.length > 0 ? upcomingLyrics[0] : null;
+  const remainingLyrics = upcomingLyrics.slice(1);
 
   return {
     before: passedLyrics.map(x => x.content).join(" \n "),
     highlighted: currentLyrics?.content ?? "",
-    after: upcomingLyrics.map(x => x.content).join(" \n ")
+    next: nextLyrics?.content ?? "",
+    after: remainingLyrics.map(x => x.content).join(" \n ")
   };
 };
 
@@ -177,15 +186,31 @@ const useStyles = makeStyles(theme => ({
   },
   highlightedLyricsWrapper: {
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "10px"
   },
   highlightedLyrics: {
     padding: "0.1em 0",
     whiteSpace: "pre-wrap",
     fontWeight: "bolder",
     fontSize: "5em",
+    color: theme.palette.primary.main,
     [theme.breakpoints.down("xs")]: {
       fontSize: "3em"
+    }
+  },
+  nextLyrics: {
+    padding: "0.1em 0",
+    whiteSpace: "pre-wrap",
+    fontWeight: "bold",
+    fontSize: "3em",
+    color: theme.palette.text.secondary,
+    opacity: 0.7,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "2em"
     }
   },
   root: {

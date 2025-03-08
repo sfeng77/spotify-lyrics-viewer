@@ -20,6 +20,7 @@ process.on("unhandledRejection", (reason, promise) => {
 
 const app = express();
 const isProduction = app.get("env") === "production";
+const useHttps = process.env.USE_HTTPS === "true";
 
 app.set("trust proxy", 1); // Trust first proxy
 
@@ -30,8 +31,8 @@ app.use(
   cookieSession({
     keys: Config.server.session_keys,
     maxAge: 48 * 60 * 60 * 1000, // Expires in 48 hours
-    sameSite: "none",
-    secure: true // This is why we need SSL in dev
+    sameSite: "lax",
+    secure: false
   })
 );
 
@@ -62,8 +63,8 @@ app.use(lyricsSubRoute, LyricsRoutes);
 
 const port = process.env.PORT || 5000;
 
-if (!isProduction) {
-  // Even when running locally, we need to use HTTPS. Read the README for details.
+if (!isProduction && useHttps) {
+  // Only use HTTPS when explicitly enabled
   https
     .createServer(
       {
