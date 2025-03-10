@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --inspect --respawn --transpileOnly src/index.ts",
     "build": "tsc",
-    "render-postbuild": "cd client && npm install && npm run build",
+    "vercel-build": "tsc && cd client && npm install && npm run build",
     "start": "node .",
     "prettier": "prettier --write ."
   },
